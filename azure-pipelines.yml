@@ -11,33 +11,47 @@ steps:
 
 - checkout: self
 
+# Install Node.js
 - task: NodeTool@0
   inputs:
     versionSpec: '18.x'
   displayName: Install Node.js
 
+# Install Salesforce CLI
 - script: |
-    npm install --global @salesforce/cli
+    npm install --global sfdx-cli
   displayName: Install Salesforce CLI
 
+# Verify Salesforce CLI
+- script: |
+    sfdx --version
+  displayName: Verify Salesforce CLI
+
+# Create JWT Key File
 - script: |
     mkdir keys
-    printf "%s" "$JWT_SERVER_KEY" > keys/server.key
+    echo "$(JWT_SERVER_KEY)" > keys/server.key
   displayName: Create JWT Key File
-  env:
-    JWT_SERVER_KEY: $(JWT_SERVER_KEY)
 
+# Authenticate Salesforce Sandbox
 - script: |
-    sf org login jwt --client-id "$SF_CLIENT_ID" --jwt-key-file keys/server.key --username "$SF_USERNAME" --instance-url https://test.salesforce.com --alias devSandbox
+    sfdx force:auth:jwt:grant \
+      --clientid "$(SF_CLIENT_ID)" \
+      --jwtkeyfile keys/server.key \
+      --username "$(SF_USERNAME)" \
+      --instanceurl https://test.salesforce.com \
+      --setdefaultusername \
+      --setalias devSandbox
   displayName: Authenticate Dev Sandbox
-  env:
-    SF_CLIENT_ID: $(SF_CLIENT_ID)
-    SF_USERNAME: $(SF_USERNAME)
 
+# Verify Connected Org
 - script: |
-    sf org list
+    sfdx force:org:list
   displayName: Verify Org Login
 
+# Deploy Metadata
 - script: |
-    sf project deploy start --source-dir MySalesforceProject/force-app --target-org devSandbox
+    sfdx force:source:deploy \
+      -p MySalesforceProject/force-app \
+      -u devSandbox
   displayName: Deploy Metadata
