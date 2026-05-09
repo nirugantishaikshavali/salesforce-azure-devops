@@ -8,47 +8,45 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+  # Checkout Repository
   - checkout: self
 
+  # Install Node.js
   - task: NodeTool@0
     inputs:
       versionSpec: "18.x"
     displayName: Install Node.js
 
+  # Install Salesforce CLI
   - script: |
-      npm install --global @salesforce/cli
+      npm install --global sfdx-cli
     displayName: Install Salesforce CLI
 
+  # Verify Salesforce CLI
   - script: |
-      sf --version
+      sfdx --version
     displayName: Verify Salesforce CLI
 
+  # Authenticate PROD
   - script: |
-      mkdir keys
-      echo "$JWT_SERVER_KEY" > keys/server.key
-    displayName: Create JWT Key File
-    env:
-      JWT_SERVER_KEY: $(JWT_SERVER_KEY)
-
-  - script: |
-      sf org login jwt \
-      --client-id "$SF_CLIENT_ID" \
-      --jwt-key-file keys/server.key \
-      --username "$SF_USERNAME" \
-      --instance-url https://login.salesforce.com \
-      --alias prodOrg
+      sfdx force:auth:jwt:grant \
+        --clientid "$(SF_CLIENT_ID)" \
+        --jwtkeyfile MySalesforceProject/keys/server.key \
+        --username "$(SF_USERNAME)" \
+        --instanceurl https://login.salesforce.com \
+        --setdefaultusername \
+        --setalias prodOrg
     displayName: Authenticate PROD
-    env:
-      SF_CLIENT_ID: $(SF_CLIENT_ID)
-      SF_USERNAME: $(SF_USERNAME)
 
+  # Verify Connected Org
   - script: |
-      sf org list
+      sfdx force:org:list
     displayName: Verify Org Login
 
+  # Deploy Salesforce Metadata
   - script: |
       cd MySalesforceProject
-      sf project deploy start \
-      --source-dir force-app \
-      --target-org prodOrg
-    displayName: Deploy to PROD
+      sfdx force:source:deploy \
+        -p force-app \
+        -u prodOrg
+    displayName: Deploy Metadata
