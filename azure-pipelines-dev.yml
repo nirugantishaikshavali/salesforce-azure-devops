@@ -1,0 +1,54 @@
+trigger:
+  - develop
+
+variables:
+  - group: DevSecrets
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "18.x"
+    displayName: Install Node.js
+
+  - script: |
+      npm install --global @salesforce/cli
+    displayName: Install Salesforce CLI
+
+  - script: |
+      sf --version
+    displayName: Verify Salesforce CLI
+
+  - script: |
+      mkdir keys
+      echo "$JWT_SERVER_KEY" > keys/server.key
+    displayName: Create JWT Key File
+    env:
+      JWT_SERVER_KEY: $(JWT_SERVER_KEY)
+
+  - script: |
+      sf org login jwt \
+      --client-id "$SF_CLIENT_ID" \
+      --jwt-key-file keys/server.key \
+      --username "$SF_USERNAME" \
+      --instance-url https://test.salesforce.com \
+      --alias devSandbox
+    displayName: Authenticate DEV Sandbox
+    env:
+      SF_CLIENT_ID: $(SF_CLIENT_ID)
+      SF_USERNAME: $(SF_USERNAME)
+
+  - script: |
+      sf org list
+    displayName: Verify Org Login
+
+  - script: |
+      cd MySalesforceProject
+      sf project deploy start \
+      --source-dir force-app \
+      --target-org devSandbox
+    displayName: Deploy to DEV
