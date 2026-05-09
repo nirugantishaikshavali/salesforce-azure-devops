@@ -41,7 +41,7 @@ steps:
   # Verify Connected Org
   - script: |
       sfdx force:org:list
-    displayName: Verify Org Login
+    displayName: Verify Org's Login
 
   # Deploy Metadata
   - script: |
