@@ -22,7 +22,7 @@ steps:
 
 - script: |
     mkdir keys
-    echo "$(JWT_SERVER_KEY)" > keys/server.key
+    printf "%s" "$(JWT_SERVER_KEY)" > keys/server.key
   displayName: Create JWT Key File
 
 - script: |
