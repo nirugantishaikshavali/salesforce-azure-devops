@@ -9,17 +9,26 @@ pool:
 
 steps:
 
+# Checkout Repository
 - checkout: self
 
+# Install Node.js
 - task: NodeTool@0
   inputs:
     versionSpec: '18.x'
   displayName: Install Node.js
 
+# Install Salesforce CLI
 - script: |
     npm install --global sfdx-cli
   displayName: Install Salesforce CLI
 
+# Verify Salesforce CLI
+- script: |
+    sfdx --version
+  displayName: Verify Salesforce CLI
+
+# Authenticate Salesforce Sandbox
 - script: |
     sfdx force:auth:jwt:grant \
       --clientid "$(SF_CLIENT_ID)" \
@@ -30,12 +39,15 @@ steps:
       --setalias devSandbox
   displayName: Authenticate Dev Sandbox
 
+# Verify Connected Org
 - script: |
     sfdx force:org:list
   displayName: Verify Org Login
 
+# Deploy Salesforce Metadata
 - script: |
+    cd MySalesforceProject
     sfdx force:source:deploy \
-      -p MySalesforceProject/force-app \
+      -p force-app \
       -u devSandbox
   displayName: Deploy Metadata
