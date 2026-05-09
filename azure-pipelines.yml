@@ -26,12 +26,7 @@ steps:
   displayName: Create JWT Key File
 
 - script: |
-    sf org login jwt \
-      --client-id "$(SF_CLIENT_ID)" \
-      --jwt-key-file keys/server.key \
-      --username "$(SF_USERNAME)" \
-      --instance-url https://test.salesforce.com \
-      --alias devSandbox
+    sf org login jwt --client-id "$(SF_CLIENT_ID)" --jwt-key-file keys/server.key --username "$(SF_USERNAME)" --instance-url https://test.salesforce.com --alias devSandbox
   displayName: Authenticate Dev Sandbox
 
 - script: |
@@ -39,7 +34,5 @@ steps:
   displayName: Verify Org Login
 
 - script: |
-    sf project deploy start \
-      --source-dir MySalesforceProject/force-app \
-      --target-org devSandbox
+    sf project deploy start --source-dir MySalesforceProject/force-app --target-org devSandbox
   displayName: Deploy Metadata
