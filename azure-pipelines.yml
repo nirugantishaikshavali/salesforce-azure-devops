@@ -1,6 +1,9 @@
 trigger:
 - develop
 
+variables:
+- group: SalesforceSecrets
+
 pool:
   vmImage: ubuntu-latest
 
@@ -37,6 +40,6 @@ steps:
 
 - script: |
     sf project deploy start \
-      --source-dir force-app \
+      --source-dir MySalesforceProject/force-app \
       --target-org devSandbox
   displayName: Deploy Metadata
