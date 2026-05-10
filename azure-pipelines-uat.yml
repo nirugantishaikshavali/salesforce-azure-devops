@@ -1,5 +1,9 @@
 trigger:
-  - uat
+  branches:
+    include:
+      - uat
+
+pr: none
 
 variables:
   - group: UATSecrets
@@ -41,9 +45,9 @@ steps:
   # Verify Connected Org
   - script: |
       sfdx force:org:list
-    displayName: Verify Org's Login
+    displayName: Verify Org Login
 
-  # Deploy Salesforce Metadata
+  # Deploy Metadata
   - script: |
       cd MySalesforceProject
       sfdx force:source:deploy \

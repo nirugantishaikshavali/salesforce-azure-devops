@@ -1,5 +1,9 @@
 trigger:
-  - main
+  branches:
+    include:
+      - main
+
+pr: none
 
 variables:
   - group: ProdSecrets
@@ -43,7 +47,7 @@ steps:
       sfdx force:org:list
     displayName: Verify Org Login
 
-  # Deploy Salesforce Metadata
+  # Deploy Metadata
   - script: |
       cd MySalesforceProject
       sfdx force:source:deploy \
