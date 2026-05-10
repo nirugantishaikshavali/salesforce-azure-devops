@@ -27,26 +27,26 @@ steps:
       sfdx --version
     displayName: Verify Salesforce CLI
 
-  # Authenticate PROD
+  # Authenticate Partial Sandbox
   - script: |
       sfdx force:auth:jwt:grant \
         --clientid "$(SF_CLIENT_ID)" \
         --jwtkeyfile MySalesforceProject/keys/server.key \
         --username "$(SF_USERNAME)" \
-        --instanceurl https://login.salesforce.com \
+        --instanceurl https://test.salesforce.com \
         --setdefaultusername \
-        --setalias prodOrg
-    displayName: Authenticate PROD
+        --setalias partialProd
+    displayName: Authenticate Partial Sandbox
 
   # Verify Connected Org
   - script: |
       sfdx force:org:list
-    displayName: Verify Org's Login
+    displayName: Verify Org Login
 
   # Deploy Salesforce Metadata
   - script: |
       cd MySalesforceProject
       sfdx force:source:deploy \
         -p force-app \
-        -u prodOrg
+        -u partialProd
     displayName: Deploy Metadata
