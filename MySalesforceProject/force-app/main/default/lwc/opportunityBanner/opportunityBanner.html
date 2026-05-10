@@ -1,0 +1,19 @@
+<template>
+    <lightning-card title="Opportunity Banner">
+        <div class="slds-p-around_medium">
+
+            <template if:true={isHighValue}>
+                <h1 style="color: green; font-size:20px;">
+                    High Value Opportunity
+                </h1>
+            </template>
+
+            <template if:false={isHighValue}>
+                <h1 style="color: red; font-size:20px;">
+                    Normal Opportunity
+                </h1>
+            </template>
+
+        </div>
+    </lightning-card>
+</template>
